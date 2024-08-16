@@ -35,7 +35,7 @@ public class SecurityConfig {
 				})
 				.csrf(csrf -> csrf.disable()) // Disable CSRF protection
 				.authorizeRequests(authorize -> authorize
-						.requestMatchers("/api/users/welcome", "/api/users/login").permitAll() // Permit access to these endpoints
+						.requestMatchers("/api/users/welcome","/api/users/testJenkins", "/api/users/login").permitAll() // Permit access to these endpoints
 						.anyRequest().authenticated() // Require authentication for all other requests
 				)
 				.logout(logout -> logout // Configure logout

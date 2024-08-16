@@ -49,6 +49,12 @@ public class AppUserController {
 		return "Welcome to the implementation of Spring Boot Security.";
 	}
 
+	@GetMapping("/testJenkins")
+	public String testJenkins(){
+		System.out.println("Welcome to the testing console.");
+		return "Welcome to testing jenkins CI/CD pipeline.";
+	}
+
 	@PostMapping("/login")
 	public String login(@Valid @RequestBody Login login){
 

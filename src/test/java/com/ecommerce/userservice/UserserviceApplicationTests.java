@@ -28,6 +28,13 @@ class UserserviceApplicationTests {
 				.andExpect(content().string("Welcome to the implementation of Spring Boot Security."));
 	}
 
+	@Test
+	public void testJenkins() throws Exception {
+		mocMvc.perform(MockMvcRequestBuilders.get("/api/users/testJenkins"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(content().string("Welcome to testing jenkins CI/CD pipeline."));
+	}
+
 
 	@Test
 	void contextLoads() {
