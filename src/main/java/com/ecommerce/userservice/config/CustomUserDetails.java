@@ -10,10 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CustomUserDetails extends AppUser implements UserDetails {
@@ -37,6 +34,9 @@ public class CustomUserDetails extends AppUser implements UserDetails {
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
         }
         this.authorities = auths;
+    }
+
+    public CustomUserDetails(Optional<AppUser> user) {
     }
 
     @Override

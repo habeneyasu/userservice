@@ -2,6 +2,7 @@ package com.ecommerce.userservice.controller;
 
 import com.ecommerce.userservice.model.Role;
 import com.ecommerce.userservice.service.RoleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users/")
+@Tag(name = "Roles end points", description = "Operations related to role management")
 public class RoleController {
 	 
     @Autowired

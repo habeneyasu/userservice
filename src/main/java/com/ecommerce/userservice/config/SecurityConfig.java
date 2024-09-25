@@ -35,7 +35,15 @@ public class SecurityConfig {
 				})
 				.csrf(csrf -> csrf.disable()) // Disable CSRF protection
 				.authorizeRequests(authorize -> authorize
-						.requestMatchers("/api/users/welcome","/api/users/testJenkins", "/api/users/login").permitAll() // Permit access to these endpoints
+						//.requestMatchers("users/api/v1/welcome","users/api/v1/testJenkins", "users/api/v1/login").permitAll() // Permit access to these endpoints
+						.requestMatchers("/users/api/v1/**","/actuator/health","http://localhost:8182/orders/api/v1/getUser").permitAll() // Permit access to these endpoints
+						.requestMatchers(
+								"/user-api-docs/**",
+								"/user-swagger-ui",
+								"/swagger-ui/**",
+								"/swagger-resources/**",
+								"/webjars/**"
+						).permitAll()
 						.anyRequest().authenticated() // Require authentication for all other requests
 				)
 				.logout(logout -> logout // Configure logout
@@ -51,11 +59,13 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.addAllowedOrigin("http://localhost:8182"); // Allow CORS from http://localhost:8181
+		//configuration.addAllowedOrigin("http://localhost:8182"); // Allow CORS from http://localhost:8181
+		configuration.addAllowedOriginPattern("*");
 		configuration.addAllowedMethod(HttpMethod.GET);
 		configuration.addAllowedMethod(HttpMethod.POST);
 		configuration.addAllowedMethod(HttpMethod.PUT);
 		configuration.addAllowedMethod(HttpMethod.DELETE);
+		configuration.addAllowedHeader("*"); // Allow all headers
 		//configuration.addAllowedHeader("Content-Type");
 		//configuration.addAllowedHeader("Authorization");
 

@@ -3,6 +3,8 @@ package com.ecommerce.userservice.service;
 import com.ecommerce.userservice.model.AppUser;
 
 import java.util.List;
+import java.util.Optional;
+
 public interface UserService {
 
 
@@ -29,9 +31,11 @@ public interface UserService {
 
 	/**
 	 * Delete user
+	 *
+	 * @return
 	 */
-	public void deleteUser(Long id);
+	public boolean deleteUser(Long id);
 
-	AppUser findByUsername(String username);
+	Optional<AppUser> findByUsername(String username);
 
 }

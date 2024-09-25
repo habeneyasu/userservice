@@ -16,23 +16,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith( SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserserviceApplicationTests {
+class UserServiceApplicationTests {
 
 	@Autowired
 	private MockMvc mocMvc;
 
 	@Test
 	public void testGetHelloWorld() throws Exception {
-		mocMvc.perform(MockMvcRequestBuilders.get("/api/users/welcome"))
+		mocMvc.perform(MockMvcRequestBuilders.get("/users/api/v1/welcome"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(content().string("Welcome to the implementation of Spring Boot Security."));
 	}
 
 	@Test
 	public void testJenkins() throws Exception {
-		mocMvc.perform(MockMvcRequestBuilders.get("/api/users/testJenkins"))
+		mocMvc.perform(MockMvcRequestBuilders.get("/users/api/v1/testJenkins"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(content().string("Welcome to testing jenkins CI/CD pipeline."));
+				.andExpect(content().string("Welcome to testing Jenkins CI/CD pipeline."));
 	}
 
 

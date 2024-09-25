@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: test@123               # Root password
+      MYSQL_DATABASE: user_service_db              # Default database to create
+      MYSQL_USER: user                      # Use a non-root username
+      MYSQL_PASSWORD: test@123                     # Password for the non-root user
+    ports:
+      - "3307:3306"                                # Host port 3307 mapped to container port 3306
+    networks:
+      - ecommerce-network
+
+  user-service:
+    image: user-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/user_service_db  # Ensure the DB name matches
+      SPRING_DATASOURCE_USERNAME: root                      # Use the non-root username here
+      SPRING_DATASOURCE_PASSWORD: test@123                         # Use the non-root password here
+    ports:
+      - "8181:8181"                                # Host port 8181 mapped to container port 8181
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    external: true  # Ensure this network exists; create it if it doesn't

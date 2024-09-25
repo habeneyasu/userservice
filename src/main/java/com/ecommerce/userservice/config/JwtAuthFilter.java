@@ -27,7 +27,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     UserDetailsServiceImp userDetailsServiceImpl;
 
-    private final String LOGIN_URI = "/api/v1/login";  // Replace with your actual login URL pattern
+    private final String LOGIN_URI = "/users/api/v1/login";  // Replace with your actual login URL pattern
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -35,6 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         // Check if request is for login or bypass filtering
+
         if (isLoginPage(request)) {
             filterChain.doFilter(request, response);
             return;

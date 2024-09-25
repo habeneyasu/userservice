@@ -1,8 +1,12 @@
 package com.ecommerce.userservice.service;
 
+import com.ecommerce.userservice.controller.AppUserController;
+import com.ecommerce.userservice.exception.ResourceNotFoundException;
 import com.ecommerce.userservice.model.AppUser;
 import com.ecommerce.userservice.repository.RoleRepository;
 import com.ecommerce.userservice.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -22,11 +26,12 @@ public class UserServiceImp implements UserService{
 	@Autowired
 	private RoleRepository roleRepository;
 
+	private static final Logger logger = LoggerFactory.getLogger(AppUserController.class);
 	/**
 	 * Get user by ID
 	 */
 	public AppUser getUserById(Long id) {
-		return userRepo.findById(id).orElse(null);
+		return userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
 	}
 	
@@ -34,7 +39,11 @@ public class UserServiceImp implements UserService{
 	 * Get all users
 	 */
 	public List<AppUser> getAllUsers(){
-		return userRepo.findAll();
+		List<AppUser> users = userRepo.findAll();
+		if (users.isEmpty()) {
+			throw new ResourceNotFoundException("No users found");
+		}
+		return users;
 	}
 
 	/**
@@ -48,32 +57,38 @@ public class UserServiceImp implements UserService{
 	 * Update existing user
 	 */
 	public  AppUser updateUser(Long id,AppUser user){
-		Optional<AppUser> existingUserOpt = userRepo.findById(id);
-		if (existingUserOpt.isPresent()) {
-			AppUser existingUser = existingUserOpt.get();
-			existingUser.setUsername(user.getUsername());
-			existingUser.setPassword(user.getPassword());
-			existingUser.setEmail(user.getEmail());
-			existingUser.setFirstName(user.getFirstName());
-			existingUser.setLastName(user.getLastName());
-			//existingUser.setRole(new HashSet<>(Collections.singletonList(userRole)));
+		return userRepo.findById(id).map(existingUser -> {
+			if (user.getUsername() != null) {
+				existingUser.setUsername(user.getUsername());
+			}
+			if (user.getEmail() != null) {
+				existingUser.setEmail(user.getEmail());
+			}
+			if (user.getFirstName() != null) {
+				existingUser.setFirstName(user.getFirstName());
+			}
+			if (user.getLastName() != null) {
+				existingUser.setLastName(user.getLastName());
+			}
 			existingUser.setUpdatedAt(LocalDateTime.now());
 			existingUser.setUpdatedBy(user.getUpdatedBy());
 			return userRepo.save(existingUser);
-		} return null;
+		}).orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found."));
 	}
 	/**
 	 * Delete user
+	 *
+	 * @return
 	 */
-	public void deleteUser(Long id){
-		AppUser findUser=getUserById(id);
-		if(findUser!=null){
-			userRepo.delete(findUser);
-		}
-		System.out.println("User deleted successfully.");
+	public boolean deleteUser(Long id){
+		Optional<AppUser> findUser = userRepo.findById(id);
+		findUser.ifPresentOrElse(userRepo::delete,
+				() -> { throw new ResourceNotFoundException("User with ID " + id + " not found."); });
+		logger.info("User with ID {} deleted successfully.", id);
+		return false;
 	}
 
-	public AppUser findByUsername(String username){
+	public Optional<AppUser> findByUsername(String username){
 		return userRepo.findByUsername(username);
 	}
 }
