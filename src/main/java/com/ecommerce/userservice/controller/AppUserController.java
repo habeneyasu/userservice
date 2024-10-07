@@ -31,7 +31,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value="/users/api/v1")
 @CrossOrigin(origins = "*")
-@ControllerAdvice
 @Tag(name = "User Management", description = "Operations related to user management")
 public class AppUserController {
 
@@ -39,18 +38,18 @@ public class AppUserController {
 	private final LoginService loginService;
 	private final RoleService roleService;
 	private  final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
 
 	private final JwtService jwtService;
 
-	public AppUserController(UserService userService,LoginService loginService,RoleService roleService,PasswordEncoder passwordEncoder, JwtService jwtService){
+	public AppUserController(UserService userService,LoginService loginService,RoleService roleService,PasswordEncoder passwordEncoder, JwtService jwtService,AuthenticationManager authenticationManager){
 		this.userService=userService;
 		this.loginService=loginService;
 		this.roleService=roleService;
 		this.passwordEncoder=passwordEncoder;
 		this.jwtService=jwtService;
+		this.authenticationManager=authenticationManager;
 	}
-
-	private AuthenticationManager authenticationManager;
 
 	// Inject logger
 	private static final Logger logger = LoggerFactory.getLogger(AppUserController.class);

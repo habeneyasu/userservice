@@ -30,13 +30,10 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> {
-					cors.configurationSource(corsConfigurationSource()); // Configure CORS
-				})
+				.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configure CORS
 				.csrf(csrf -> csrf.disable()) // Disable CSRF protection
-				.authorizeRequests(authorize -> authorize
-						//.requestMatchers("users/api/v1/welcome","users/api/v1/testJenkins", "users/api/v1/login").permitAll() // Permit access to these endpoints
-						.requestMatchers("/users/api/v1/**","/actuator/health","http://localhost:8182/orders/api/v1/getUser").permitAll() // Permit access to these endpoints
+				.authorizeHttpRequests(authorize -> authorize // Use authorizeHttpRequests instead
+						.requestMatchers("/users/api/v1/**", "/actuator/health", "http://localhost:8182/orders/api/v1/getUser").permitAll() // Permit access to these endpoints
 						.requestMatchers(
 								"/user-api-docs/**",
 								"/user-swagger-ui",
@@ -50,11 +47,12 @@ public class SecurityConfig {
 						.logoutUrl("/logout")
 						.logoutSuccessUrl("/")
 				)
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JwtAuthFilter before UsernamePasswordAuthenticationFilter
-		// Disable session creation
-		http.sessionManagement(session -> session.disable());
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Add JwtAuthFilter before UsernamePasswordAuthenticationFilter
+				.sessionManagement(session -> session.disable()); // Disable session creation
+
 		return http.build();
 	}
+
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {

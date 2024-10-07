@@ -3,30 +3,41 @@ version: '3.8'
 services:
   db:
     image: mysql:5.7
+    container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: test@123               # Root password
-      MYSQL_DATABASE: user_service_db              # Default database to create
-      MYSQL_USER: user                      # Use a non-root username
-      MYSQL_PASSWORD: test@123                     # Password for the non-root user
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}  # Root password
+      MYSQL_DATABASE: user_service_db                    # Default database to create
+      MYSQL_USER: user                                   # Non-root username
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}      # Password for the non-root user
     ports:
-      - "3307:3306"                                # Host port 3307 mapped to container port 3306
+      - "3307:3306"                                      # Host port 3307 mapped to container port 3306
     networks:
       - ecommerce-network
+    volumes:
+      - db_data:/var/lib/mysql                           # Persisting MySQL data
 
   user-service:
-    image: user-app
+    image: user-service:latest                           # Assuming you have already built this image
+    container_name: user_service_app
     build:
       context: .
-      dockerfile: Dockerfile
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/user_service_db  # Ensure the DB name matches
-      SPRING_DATASOURCE_USERNAME: root                      # Use the non-root username here
-      SPRING_DATASOURCE_PASSWORD: test@123                         # Use the non-root password here
+      dockerfile: Dockerfile                             # Define a Dockerfile for your user-service
     ports:
-      - "8181:8181"                                # Host port 8181 mapped to container port 8181
+      - "8181:8181"                                      # Expose port for Spring Boot
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/user_service_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}   # Ensure this is set in .env or in the compose
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update              # Ensure Hibernate syncs schema correctly
+    depends_on:
+      - db
     networks:
       - ecommerce-network
+    restart: unless-stopped                              # Restart policy
+
+volumes:
+  db_data:
 
 networks:
   ecommerce-network:
-    external: true  # Ensure this network exists; create it if it doesn't
+    driver: bridge

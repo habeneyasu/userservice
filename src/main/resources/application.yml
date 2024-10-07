@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: USER-SERVICE
+
 management:
   endpoints:
     web:
