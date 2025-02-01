@@ -1,5 +1,6 @@
 package com.ecommerce.userservice.controller;
 
+import com.ecommerce.userservice.config.QRCodeDataBuilder;
 import com.ecommerce.userservice.model.AppUser;
 import com.ecommerce.userservice.model.Role;
 import com.ecommerce.userservice.modeldto.Login;
@@ -13,9 +14,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,16 +40,18 @@ public class AppUserController {
 	private final RoleService roleService;
 	private  final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
+	private final QRCodeDataBuilder qRCodeDataBuilder;
 
 	private final JwtService jwtService;
 
-	public AppUserController(UserService userService,LoginService loginService,RoleService roleService,PasswordEncoder passwordEncoder, JwtService jwtService,AuthenticationManager authenticationManager){
+	public AppUserController(UserService userService,LoginService loginService,RoleService roleService,PasswordEncoder passwordEncoder, JwtService jwtService,AuthenticationManager authenticationManager,QRCodeDataBuilder qRCodeDataBuilder){
 		this.userService=userService;
 		this.loginService=loginService;
 		this.roleService=roleService;
 		this.passwordEncoder=passwordEncoder;
 		this.jwtService=jwtService;
 		this.authenticationManager=authenticationManager;
+		this.qRCodeDataBuilder=qRCodeDataBuilder;
 	}
 
 	// Inject logger
@@ -175,5 +178,29 @@ public class AppUserController {
 	public Optional<AppUser> findUserByUserName(@RequestParam("username") String username){
 		return userService.findByUsername(username);
 	}
+
+	@GetMapping("/generate-dynamic-qr")
+    public ResponseEntity<byte[]> generateQRCode() {
+        try {
+            // Step 1: Build EMVCo data
+            String qrData = qRCodeDataBuilder.buildQRCodeData("ET0914894", "4000.00", "ETB");
+
+            // Step 2: Add CRC
+            String crc = qRCodeDataBuilder.calculateCRC(qrData);
+            qrData += "6304" + crc;
+
+            // Step 3: Generate QR Code
+            byte[] qrImage = qRCodeDataBuilder.generateQRCode(qrData, 300, 300);
+
+            // Step 4: Return QR Code as response
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=qr.png")
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(qrImage);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
 	
 }

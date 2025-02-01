@@ -30,28 +30,35 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configure CORS
-				.csrf(csrf -> csrf.disable()) // Disable CSRF protection
-				.authorizeHttpRequests(authorize -> authorize // Use authorizeHttpRequests instead
-						.requestMatchers("/users/api/v1/**", "/actuator/health", "http://localhost:8182/orders/api/v1/getUser").permitAll() // Permit access to these endpoints
-						.requestMatchers(
-								"/user-api-docs/**",
-								"/user-swagger-ui",
-								"/swagger-ui/**",
-								"/swagger-resources/**",
-								"/webjars/**"
-						).permitAll()
-						.anyRequest().authenticated() // Require authentication for all other requests
-				)
-				.logout(logout -> logout // Configure logout
-						.logoutUrl("/logout")
-						.logoutSuccessUrl("/")
-				)
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Add JwtAuthFilter before UsernamePasswordAuthenticationFilter
-				.sessionManagement(session -> session.disable()); // Disable session creation
-
+			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configure CORS
+			.csrf(csrf -> csrf.disable()) // Disable CSRF protection
+			.authorizeHttpRequests(authorize -> authorize
+					.requestMatchers(
+							"/users/api/v1/**",
+							"/users/api/v1/generate-dynamic-qr", // Ensure this is permitted
+							"/actuator/health",
+							"http://localhost:8182/orders/api/v1/getUser", // Check the correct endpoint format
+							"http://localhost:8181/users/api/v1/generate-dynamic-qr" // Add this endpoint if external request
+					).permitAll() // Permit access to specified endpoints
+					.requestMatchers(
+							"/user-api-docs/**",
+							"/user-swagger-ui",
+							"/swagger-ui/**",
+							"/swagger-resources/**",
+							"/webjars/**"
+					).permitAll()
+					.anyRequest().authenticated() // Require authentication for all other requests
+			)
+			.logout(logout -> logout
+					.logoutUrl("/logout")
+					.logoutSuccessUrl("/")
+			)
+			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Add JwtAuthFilter
+			.sessionManagement(session -> session.disable()); // Disable session creation
+	
 		return http.build();
 	}
+	
 
 
 	@Bean
