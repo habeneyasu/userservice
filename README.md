@@ -418,10 +418,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Haben Eyasu** - Senior Backend Developer
 
-- **Email**: [haben.eyasu@gmail.com](mailto:haben.eyasu@gmail.com)
+- **Email**: [habeneyasu@gmail.com](mailto:habeneyasu@gmail.com)
 - **LinkedIn**: [linkedin.com/in/habeneyasu](https://linkedin.com/in/habeneyasu)
 - **GitHub**: [github.com/habeneyasu](https://github.com/habeneyasu)
-- **Portfolio**: [habeneyasu.github.io](https://habeneyasu.github.io)
 
 ---
 
